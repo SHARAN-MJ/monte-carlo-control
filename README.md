@@ -1,23 +1,73 @@
 # MONTE CARLO CONTROL ALGORITHM
 
 ## AIM
-Write the experiment AIM.
+To implement Monte Carlo Control to learn an optimal policy in a grid environment and evaluate its performance in terms of 
+goal-reaching probability and average return.
 
 ## PROBLEM STATEMENT
-Explain the problem statement.
+The task involves solving a Markov Decision Process (MDP) using Monte Carlo Control. 
+The environment is likely a grid world where an agent must navigate through states to reach a goal while maximizing returns. 
+The goal is to compute an optimal policy that achieves the highest probability of success (reaching the goal) and maximizes the average undiscounted return.
 
 ## MONTE CARLO CONTROL ALGORITHM
-Include the steps involved in the Monte Carlo control algorithm
+
+1. Initialize the policy randomly.
+
+2. Generate episodes: Simulate episodes in the environment using the current policy.
+
+3. Update action-value function Q(s,a): For each state-action pair encountered in the episode,
+   update the expected return based on the actual rewards received during the episode.
+
+5. Policy improvement: Update the policy greedily based on the updated action-value estimates.
+
+6. Repeat the process until convergence.
 
 ## MONTE CARLO CONTROL FUNCTION
-Include the Monte Carlo control function
+```python
 
+
+def mc_control (env, gamma = 1.0,
+                init_alpha = 0.5,min_alpha = 0.01, alpha_decay_ratio = 0.5,
+                init_epsilon = 1.0, min_epsilon = 0.1, epsilon_decay_ratio = 0.9,
+                n_episodes = 5000, max_steps = 500, first_visit = True):
+  nS, nA = env.observation_space.n, env.action_space.n
+
+  #Write your code here
+  discounts=np.logspace(0,max_steps,num=max_steps,base=gamma,endpoint=False)
+  alphas=decay_schedule(init_alpha,min_alpha,alpha_decay_ratio,n_episodes)
+  epsilons=decay_schedule(init_epsilon,min_epsilon,epsilon_decay_ratio,n_episodes)
+  pi_track=[]
+  Q=np.zeros((nS,nA),dtype=np.float64)
+  Q_track=np.zeros((n_episodes,nS,nA),dtype=np.float64)
+
+  select_action=lambda state,Q,epsilon: np.argmax(Q[state]) if np.random.random() > epsilon else np.random.randint(len(Q[state]))
+
+  for e in tqdm(range(n_episodes),leave=False):
+    trajectory=generate_trajectory(select_action,Q,epsilons[e],env,max_steps)
+    visited=np.zeros((nS,nA),dtype=bool)
+    for t,(state,action,reward,_,_) in enumerate(trajectory):
+      if visited[state] [action] and first_visit:
+        continue
+      visited[state][action]=True
+      n_steps=len(trajectory[t:])
+      G=np.sum(discounts[:n_steps]*trajectory[t:,2])
+      Q[state][action]=Q[state][action]+alphas[e]*(G-Q[state][action])
+      Q_track[e]=Q
+      pi_track.append(np.argmax(Q,axis=1))
+  V=np.max(Q,axis=1)
+  pi=lambda s: {s:a for s,a in enumerate (np.argmax(Q,axis=1))}[s]
+  #return Q, V, pi, Q_track, pi_track
+  return Q, V, pi
+
+```
 ## OUTPUT:
-### Name:
-### Register Number:
+### Name: SHARAN  MJ
+### Register Number: 212222240097
 
-Mention the Action value function, optimal value function, optimal policy, and success rate for the optimal policy.
+![Screenshot 2024-10-09 113520](https://github.com/user-attachments/assets/0b44bc02-fd2d-4949-931d-7ad6920ee801)
+![Screenshot 2024-10-09 113527](https://github.com/user-attachments/assets/446fe365-8796-4c27-8218-6044b213cc26)
+
 
 ## RESULT:
-
-Write your result here
+Thus to implement Monte Carlo Control to learn an optimal policy in a grid environment and evaluate its performance in terms of 
+goal-reaching probability and average return is executed successfully.
